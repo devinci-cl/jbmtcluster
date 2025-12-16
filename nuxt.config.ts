@@ -8,7 +8,24 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
   css: ['@/assets/css/main.css'],
+  build: {
+    transpile:
+      process.env.NODE_ENV === 'production'
+        ? [
+          'naive-ui',
+          'vueuc',
+          '@css-render/vue3-ssr',
+          '@juggle/resize-observer'
+        ]
+        : ['@juggle/resize-observer']
+  },
   vite: {
+    optimizeDeps: {
+      include:
+        process.env.NODE_ENV === 'development'
+          ? ['naive-ui', 'vueuc', 'date-fns-tz/esm/formatInTimeZone']
+          : []
+    },
     plugins: [
       tailwindcss(),
       AutoImport({
@@ -22,10 +39,12 @@ export default defineNuxtConfig({
               'useLoadingBar'
             ]
           }
-        ]
+        ],
+        dts: false
       }),
       Components({
-        resolvers: [NaiveUiResolver()]
+        resolvers: [NaiveUiResolver()],
+        dts: false
       })
     ],
   },
